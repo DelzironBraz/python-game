@@ -88,7 +88,7 @@ def run_game():
                     model.pacman.set_direction((0, 1))
                 elif event.key == pygame.K_LEFT:
                     model.pacman.set_direction((-1, 0))
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT):
                     model.pacman.set_direction((1, 0))
         
         model.step()
@@ -96,15 +96,16 @@ def run_game():
         screen.fill(BACKGROUND_COLOR)
         
         # Desenhar os agentes na tela
-        for agent, x, y in model.grid.coord_iter():
-            if isinstance(agent, PacmanAgent):
-                pygame.draw.circle(screen, PACMAN_COLOR, 
-                                   (int(x * cell_width + cell_width / 2),
-                                    int(y * cell_height + cell_height / 2)),
-                                   int(min(cell_width, cell_height) / 2) - 2)
-            elif isinstance(agent, GhostAgent):
-                pygame.draw.rect(screen, GHOST_COLOR, 
-                                 (x * cell_width, y * cell_height, cell_width, cell_height))
+        for (x, y), cell_contents in model.grid.coord_iter():
+            for agent in cell_contents:
+                if isinstance(agent, PacmanAgent):
+                    pygame.draw.circle(screen, PACMAN_COLOR, 
+                                       (int(x * cell_width + cell_width / 2),
+                                        int(y * cell_height + cell_height / 2)),
+                                       int(min(cell_width, cell_height) / 2) - 2)
+                elif isinstance(agent, GhostAgent):
+                    pygame.draw.rect(screen, GHOST_COLOR, 
+                                     (x * cell_width, y * cell_height, cell_width, cell_height))
         
         pygame.display.flip()
         clock.tick(60)
