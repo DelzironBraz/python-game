@@ -3,6 +3,11 @@ from mesa.space import MultiGrid
 from mesa.time import SimultaneousActivation
 import pygame
 
+# Definir algumas cores
+PACMAN_COLOR = (255, 255, 0)  # Amarelo
+GHOST_COLOR = (255, 0, 0)     # Vermelho
+BACKGROUND_COLOR = (0, 0, 0)  # Preto
+
 class PacmanAgent(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -43,6 +48,7 @@ class GhostAgent(Agent):
 
 class PacmanModel(Model):
     def __init__(self, width, height):
+        super().__init__()  # Inicializa a classe pai Model
         self.grid = MultiGrid(width, height, torus=False)
         self.schedule = SimultaneousActivation(self)
         
@@ -67,6 +73,9 @@ def run_game():
     clock = pygame.time.Clock()
     model = PacmanModel(10, 10)
     
+    cell_width = screen.get_width() / model.grid.width
+    cell_height = screen.get_height() / model.grid.height
+    
     running = True
     while running:
         for event in pygame.event.get():
@@ -84,8 +93,18 @@ def run_game():
         
         model.step()
         
-        screen.fill((0, 0, 0))
-        # Adicionar código de renderização aqui (ex: desenhar Pacman e Fantasmas)
+        screen.fill(BACKGROUND_COLOR)
+        
+        # Desenhar os agentes na tela
+        for agent, x, y in model.grid.coord_iter():
+            if isinstance(agent, PacmanAgent):
+                pygame.draw.circle(screen, PACMAN_COLOR, 
+                                   (int(x * cell_width + cell_width / 2),
+                                    int(y * cell_height + cell_height / 2)),
+                                   int(min(cell_width, cell_height) / 2) - 2)
+            elif isinstance(agent, GhostAgent):
+                pygame.draw.rect(screen, GHOST_COLOR, 
+                                 (x * cell_width, y * cell_height, cell_width, cell_height))
         
         pygame.display.flip()
         clock.tick(60)
@@ -94,4 +113,3 @@ def run_game():
 
 if __name__ == "__main__":
     run_game()
-
